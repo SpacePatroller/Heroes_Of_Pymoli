@@ -25,11 +25,14 @@ num_purchases = data["SN"].count()
 #total revenue
 total_rev = data["Price"].sum()
 
-#create data tabel 
+#create data table
 purchasing_analysis_total = pd.DataFrame({"Number of Unique Items":[unique_items],
                                           "Average Price":[avg],
                                           "Number of Purchases":[num_purchases],
                                           "Total Revenue":[total_rev]})
+
+purchasing_analysis_total["Average Price"] = purchasing_analysis_total["Average Price"].map("${:.2f}".format)
+purchasing_analysis_total["Total Revenue"] = purchasing_analysis_total["Total Revenue"].map("${:,.2f}".format)
 
 #purchasing_analysis_total.columns = ('Number of Unique Items','Average Price','Number of Purchases', 'Total Revenue')
 print(purchasing_analysis_total)
@@ -79,3 +82,55 @@ other_purchases = other_non_disclosed["Price"].sum()
 female_mean = female_purchases / females
 male_mean = male_purchases / males
 other_mean = other_purchases / others
+
+index2 = ["Male","Female","Other / Non-Disclosed"]
+pur_analysis_by_gender = pd.DataFrame ({" ":" ",
+                                        "Purchase Count":[female_count,male_count,other_count],
+                                        "Average Purchase Price":[female_avg,male_avg,other_avg],
+                                        "Total Purchase Value":[female_purchases,male_purchases,other_purchases],
+                                        "Avg Total Purchase per Person":[female_mean,male_mean,other_mean]},index = index1)
+
+pur_analysis_by_gender["Average Purchase Price"] = pur_analysis_by_gender["Average Purchase Price"].map("${:.2f}".format)
+pur_analysis_by_gender["Avg Total Purchase per Person"] = pur_analysis_by_gender["Avg Total Purchase per Person"].map("${:.2f}".format)
+pur_analysis_by_gender.index.names = ["Gender"]
+
+print(pur_analysis_by_gender)
+
+#   *** Age Demographics ***
+ 
+bins = [0,10,14,19,24,29,34,39,100]
+groups = ["<10","10-14","15-19","20-24","25-29","30-34","35-39","40+"]
+
+data["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
+
+data.groupby("Total Count")
+#obtain counts for each age range
+agedata = data["Total Count"].value_counts()
+age = pd.DataFrame (agedata)
+#sort index 
+age.sort_index(inplace=True)
+
+#format percent to two decimal places
+age["Percent"] = age["Percent"].map("{:.2f}".format)
+
+age["Percent"] = (age["Total Count"] / (age["Total Count"].sum()) ) * 100
+
+print(age)
+
+
+
+#   *** Purchasing Analysis (Age) ***
+
+#df["Test Score Summary"] = pd.cut(df["Test Score"], bins,
+ 
+bins = [0,9,14,19,24,29,34,39,200]
+groups = ["<10","10-14","15-19","20-24","25-29","30-34","35-39","40+"]
+
+unique_sn["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
+
+age_data = pd.DataFrame(unique_sn["Total Count"].value_counts())
+
+age_data["percent"] = age_data["Total Count"] / age_data["Total Count"].sum() * 100
+age_data["percent"] = age_data["percent"].map("% {:.2f}".format)
+
+age_data.sort_index()
