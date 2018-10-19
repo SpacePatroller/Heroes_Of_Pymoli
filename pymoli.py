@@ -10,6 +10,7 @@ data = pd.read_csv(file)
 count = len(data["SN"].value_counts())
 total = pd.DataFrame([count])
 total_players = total.rename(columns={0:"Total Players"})
+print("  ")
 print("Total Players")
 print(total_players)
 
@@ -36,31 +37,37 @@ purchasing_analysis_total["Average Price"] = purchasing_analysis_total["Average 
 purchasing_analysis_total["Total Revenue"] = purchasing_analysis_total["Total Revenue"].map("${:,.2f}".format)
 
 #purchasing_analysis_total.columns = ('Number of Unique Items','Average Price','Number of Purchases', 'Total Revenue')
+print("  ")
 print("Purchasing Analysis Total")
 print(purchasing_analysis_total)
 
 #       *** Gender Demographics ***
 
-#find count of male players
 male = data.loc[data["Gender"] == "Male",:]
 males = len(male["SN"].value_counts())
 #percent
-percent_male = males / total_players
+percent_male =   males / len(data["SN"].value_counts()) * 100
+
 #find count of female players
 female = data.loc[data["Gender"] == "Female",:]
 females = len(female["SN"].value_counts())
 #percent
-percent_female = females / total_players
+percent_female =   females / len(data["SN"].value_counts()) * 100
+
 #find count of Other/Non-Disclosed players
 other_non_disclosed = data.loc[data["Gender"] == "Other / Non-Disclosed",:]
 others = len(other_non_disclosed["SN"].value_counts())
 #percent
-percent_other = others / total_players
+percent_other =   others / len(data["SN"].value_counts()) * 100
 
 #gender demographics table
 index1 = ["Male","Female","Other / Non-Disclosed"]
 gender_df = pd.DataFrame ({"Total Count":[males,females,others],
                            "Percentage of Players":[percent_male,percent_female,percent_other]}, index=index1)
+
+gender_df["Percentage of Players"] = gender_df["Percentage of Players"].map("% {:.2f}".format)
+
+print("  ")
 print("Gender Demographics")
 print(gender_df)
 
@@ -96,6 +103,7 @@ pur_analysis_by_gender = pd.DataFrame ({" ":" ",
 pur_analysis_by_gender["Average Purchase Price"] = pur_analysis_by_gender["Average Purchase Price"].map("${:.2f}".format)
 pur_analysis_by_gender["Avg Total Purchase per Person"] = pur_analysis_by_gender["Avg Total Purchase per Person"].map("${:.2f}".format)
 pur_analysis_by_gender.index.names = ["Gender"]
+print("  ")
 print("Purchase Analysis by Gender")
 print(pur_analysis_by_gender)
 
@@ -114,17 +122,16 @@ age_data["Percent"] = age_data["Total Count"] / age_data["Total Count"].sum() * 
 age_data["Percent"] = age_data["Percent"].map("% {:.2f}".format)
 
 age_data.sort_index()
+print("  ")
 print("Age Demographics")
 print(age_data)
 
 
 #   *** Purchasing Analysis (Age) ***
 
-
 data["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
 byage = pd.DataFrame(data["Total Count"].value_counts())
 byage = byage.reset_index()
-
 
 lessthen_ten = data.loc[data["Age"] < 10,:]
 first = lessthen_ten["Price"].sum() / lessthen_ten["Price"].count()
@@ -222,6 +229,7 @@ Pur_Analysis_Age.rename(columns = {'index':'Age_Range'})
 Pur_Analysis_Age = pd.concat([tested,atpp], axis=1)
 
 Pur_Analysis_Age = Pur_Analysis_Age.rename(index=str, columns={"index": "Age Range"})
+print("  ")
 print("Purchasing Analysis Age")
 print(Pur_Analysis_Age)
 
@@ -262,6 +270,7 @@ avp4 = pd.concat([avp3,avpt], axis=1)
 avp4 = avp4.rename(index=str, columns={"index": "Name","SN":""})
 
 top_spenders = avp4.set_index("Name")
+print("  ")
 print("Top Spenders")
 print(top_spenders.head())
 
@@ -280,10 +289,22 @@ ip = ip.rename(columns={"Price":"Item Price"})
 pur_count = pd.DataFrame(pc)
 pur_count = pur_count.rename(columns={"Price":"Purchase Count"})
 
+mpi1 = pd.concat([pur_count,ip,tpv],axis=1)
+mpi1 = mpi1.rename(columns={"Price":"Total Purchase Value"})
+mpi1["Total Purchase Value"] = mpi1["Total Purchase Value"].map("$ {:.2f}".format)
+mpi1["Item Price"] = mpi1["Item Price"].map("$ {:.2f}".format)
+mpi1 = mpi1.sort_values(by='Purchase Count',ascending=False)
+print("  ")
+print("Most Popular Items")
+print(mpi1.head())
+
+#   *** Most Profitable Items ***
+
 mpi = pd.concat([pur_count,ip,tpv],axis=1)
 mpi = mpi.rename(columns={"Price":"Total Purchase Value"})
+mpi = mpi.sort_values(by='Total Purchase Value',ascending=False)
 mpi["Total Purchase Value"] = mpi["Total Purchase Value"].map("$ {:.2f}".format)
 mpi["Item Price"] = mpi["Item Price"].map("$ {:.2f}".format)
-mpi = mpi.sort_values(by='Purchase Count',ascending=False)
-print("Most Popular Items")
+print("  ")
+print("Most Profitable Items")
 print(mpi.head())
