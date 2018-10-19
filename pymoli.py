@@ -224,3 +224,66 @@ Pur_Analysis_Age = pd.concat([tested,atpp], axis=1)
 Pur_Analysis_Age = Pur_Analysis_Age.rename(index=str, columns={"index": "Age Range"})
 print("Purchasing Analysis Age")
 print(Pur_Analysis_Age)
+
+#   *** Top Spenders ****
+
+purchases = pd.DataFrame(data["SN"].value_counts())
+purchases = purchases.iloc[0:5]
+#purchases
+
+#Average Purchase Price
+one = data.loc[data["SN"] == 'Lisosia93',["Price"]]
+ones = one["Price"].sum() / one["Price"].count()
+
+two = data.loc[data["SN"] == 'Iral74',["Price"]]
+twos = two["Price"].sum() / two["Price"].count()
+
+three = data.loc[data["SN"] == 'Idastidru52',["Price"]]
+threes = three["Price"].sum() / three["Price"].count()
+
+four = data.loc[data["SN"] == 'Chamjask73',["Price"]]
+fours = four["Price"].sum() / four["Price"].count()
+
+five = data.loc[data["SN"] == 'Ialallo29',["Price"]]
+fives = five["Price"].sum() / five["Price"].count()
+
+avps = pd.DataFrame({"Average Purchase Price":[ones,twos,threes,fours,fives]})
+avps["Average Purchase Price"] = avps["Average Purchase Price"].map("$ {:.2f}".format)
+
+avp3 = pd.concat([purchases,avps], axis=1)
+#avp3
+
+#Average Purchase Price / #Total Purchase Value
+one = data.loc[data["SN"] == 'Lisosia93',["Price"]]
+ones = one["Price"].sum() / one["Price"].count()
+onest = one["Price"].sum()
+
+two = data.loc[data["SN"] == 'Iral74',["Price"]]
+twos = two["Price"].sum() / two["Price"].count()
+twost = two["Price"].sum() 
+
+three = data.loc[data["SN"] == 'Idastidru52',["Price"]]
+threes = three["Price"].sum() / three["Price"].count()
+threest = two["Price"].sum() 
+
+four = data.loc[data["SN"] == 'Chamjask73',["Price"]]
+fours = four["Price"].sum() / four["Price"].count()
+fourst = two["Price"].sum() 
+
+five = data.loc[data["SN"] == 'Ialallo29',["Price"]]
+fives = five["Price"].sum() / five["Price"].count()
+fivet = two["Price"].sum() 
+
+avps = pd.DataFrame({"Average Purchase Price":[ones,twos,threes,fours,fives]})
+avps["Average Purchase Price"] = avps["Average Purchase Price"].map("$ {:.2f}".format)
+avp3 = pd.concat([purchases,avps], axis=1)
+
+avpt = pd.DataFrame({"Total Purchase Values":[onest,twost,threest,fourst,fivet]})
+avpt["Total Purchase Values"] = avpt["Total Purchase Values"].map("$ {:.2f}".format)
+avp4 = pd.concat([avp3,avpt], axis=1)
+avp4 = avp4.rename(index=str, columns={"index": "Name"})
+
+avp4.set_index("Name")
+
+print("Top Spenders")
+print("avp4")
