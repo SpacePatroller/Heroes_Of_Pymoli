@@ -230,29 +230,6 @@ print(Pur_Analysis_Age)
 purchases = pd.DataFrame(data["SN"].value_counts())
 purchases = purchases.iloc[0:5]
 purchases = purchases.reset_index()
-#purchases
-
-#Average Purchase Price
-one = data.loc[data["SN"] == 'Lisosia93',["Price"]]
-ones = one["Price"].sum() / one["Price"].count()
-
-two = data.loc[data["SN"] == 'Iral74',["Price"]]
-twos = two["Price"].sum() / two["Price"].count()
-
-three = data.loc[data["SN"] == 'Idastidru52',["Price"]]
-threes = three["Price"].sum() / three["Price"].count()
-
-four = data.loc[data["SN"] == 'Chamjask73',["Price"]]
-fours = four["Price"].sum() / four["Price"].count()
-
-five = data.loc[data["SN"] == 'Ialallo29',["Price"]]
-fives = five["Price"].sum() / five["Price"].count()
-
-avps = pd.DataFrame({"Average Purchase Price":[ones,twos,threes,fours,fives]})
-avps["Average Purchase Price"] = avps["Average Purchase Price"].map("$ {:.2f}".format)
-
-avp3 = pd.concat([purchases,avps], axis=1)
-#avp3
 
 #Average Purchase Price / #Total Purchase Value
 one = data.loc[data["SN"] == 'Lisosia93',["Price"]]
@@ -265,15 +242,15 @@ twost = two["Price"].sum()
 
 three = data.loc[data["SN"] == 'Idastidru52',["Price"]]
 threes = three["Price"].sum() / three["Price"].count()
-threest = two["Price"].sum() 
+threest = three["Price"].sum() 
 
 four = data.loc[data["SN"] == 'Chamjask73',["Price"]]
 fours = four["Price"].sum() / four["Price"].count()
-fourst = two["Price"].sum() 
+fourst = four["Price"].sum() 
 
 five = data.loc[data["SN"] == 'Ialallo29',["Price"]]
 fives = five["Price"].sum() / five["Price"].count()
-fivet = two["Price"].sum() 
+fivet = five["Price"].sum() 
 
 avps = pd.DataFrame({"Average Purchase Price":[ones,twos,threes,fours,fives]})
 avps["Average Purchase Price"] = avps["Average Purchase Price"].map("$ {:.2f}".format)
@@ -284,49 +261,29 @@ avpt["Total Purchase Values"] = avpt["Total Purchase Values"].map("$ {:.2f}".for
 avp4 = pd.concat([avp3,avpt], axis=1)
 avp4 = avp4.rename(index=str, columns={"index": "Name","SN":""})
 
-avp4.set_index("Name")         #this works in jupyter but not here?
-#avp4.reset_index()
-
+top_spenders = avp4.set_index("Name")
 print("Top Spenders")
-print(avp4)
-
-
+print(top_spenders.head())
 
 #   **** Most Popular Items ***
-items = data["Item Name"].value_counts()
-items = items.iloc[0:5]
-items = pd.DataFrame(items)
-items = items.reset_index()
 
-#Item Price
-fc = data.loc[data["Item Name"] == 'Final Critic']
-fc1 = fc["Price"].mean()
-fcs = fc["Price"].sum()
+mpi = data[['Item ID','Item Name','Price']]
+tpv = mpi.groupby(['Item ID','Item Name'])['Price'].sum()
+tpv = pd.DataFrame(tpv)
+#tpv
+pc = mpi.groupby(['Item ID','Item Name']).count()
+#tpv.head()
+ip = mpi.groupby(['Item ID','Item Name'])['Price'].mean()
+ip = pd.DataFrame(ip)
+ip = ip.rename(columns={"Price":"Item Price"})
+#ip.head()
+pur_count = pd.DataFrame(pc)
+pur_count = pur_count.rename(columns={"Price":"Purchase Count"})
 
-os = data.loc[data["Item Name"] == 'Oathbreaker, Last Hope of the Breaking Storm']
-os1 = os["Price"].mean()
-oss = os["Price"].sum()
-
-na = data.loc[data["Item Name"] == 'Nirvana']
-na1 = na["Price"].mean()
-nas = na["Price"].sum()
-
-fgc = data.loc[data["Item Name"] == 'Fiery Glass Crusader']
-fgc1 = fgc["Price"].mean()
-fgcs = fgc["Price"].sum()
-
-eh = data.loc[data["Item Name"] == 'Extraction, Quickblade Of Trembling Hands']
-eh1 = eh["Price"].mean()
-fc1 = fc["Price"].sum()
-
-item_price = pd.DataFrame({"Item Price":[fc1,os1,na1,fgc1,eh1]})
-item_price["Item Price"] = item_price["Item Price"].map("$ {:.2f}".format)
-
-
-
-tpv = pd.DataFrame({"Total Purchase Value":[fcs,oss,nas,fgcs,fc1]})
-tpv["Total Purchase Value"] = tpv["Total Purchase Value"].map("$ {:.2f}".format)
-
-mpi = pd.concat([items,item_price,tpv], axis=1)
+mpi = pd.concat([pur_count,ip,tpv],axis=1)
+mpi = mpi.rename(columns={"Price":"Total Purchase Value"})
+mpi["Total Purchase Value"] = mpi["Total Purchase Value"].map("$ {:.2f}".format)
+mpi["Item Price"] = mpi["Item Price"].map("$ {:.2f}".format)
+mpi = mpi.sort_values(by='Purchase Count',ascending=False)
 print("Most Popular Items")
-print(mpi)
+print(mpi.head())
