@@ -229,6 +229,7 @@ print(Pur_Analysis_Age)
 
 purchases = pd.DataFrame(data["SN"].value_counts())
 purchases = purchases.iloc[0:5]
+purchases = purchases.reset_index()
 #purchases
 
 #Average Purchase Price
@@ -281,9 +282,51 @@ avp3 = pd.concat([purchases,avps], axis=1)
 avpt = pd.DataFrame({"Total Purchase Values":[onest,twost,threest,fourst,fivet]})
 avpt["Total Purchase Values"] = avpt["Total Purchase Values"].map("$ {:.2f}".format)
 avp4 = pd.concat([avp3,avpt], axis=1)
-avp4 = avp4.rename(index=str, columns={"index": "Name"})
+avp4 = avp4.rename(index=str, columns={"index": "Name","SN":""})
 
-avp4.set_index("Name")
+avp4.set_index("Name")         #this works in jupyter but not here?
+#avp4.reset_index()
 
 print("Top Spenders")
-print("avp4")
+print(avp4)
+
+
+
+#   **** Most Popular Items ***
+items = data["Item Name"].value_counts()
+items = items.iloc[0:5]
+items = pd.DataFrame(items)
+items = items.reset_index()
+
+#Item Price
+fc = data.loc[data["Item Name"] == 'Final Critic']
+fc1 = fc["Price"].mean()
+fcs = fc["Price"].sum()
+
+os = data.loc[data["Item Name"] == 'Oathbreaker, Last Hope of the Breaking Storm']
+os1 = os["Price"].mean()
+oss = os["Price"].sum()
+
+na = data.loc[data["Item Name"] == 'Nirvana']
+na1 = na["Price"].mean()
+nas = na["Price"].sum()
+
+fgc = data.loc[data["Item Name"] == 'Fiery Glass Crusader']
+fgc1 = fgc["Price"].mean()
+fgcs = fgc["Price"].sum()
+
+eh = data.loc[data["Item Name"] == 'Extraction, Quickblade Of Trembling Hands']
+eh1 = eh["Price"].mean()
+fc1 = fc["Price"].sum()
+
+item_price = pd.DataFrame({"Item Price":[fc1,os1,na1,fgc1,eh1]})
+item_price["Item Price"] = item_price["Item Price"].map("$ {:.2f}".format)
+
+
+
+tpv = pd.DataFrame({"Total Purchase Value":[fcs,oss,nas,fgcs,fc1]})
+tpv["Total Purchase Value"] = tpv["Total Purchase Value"].map("$ {:.2f}".format)
+
+mpi = pd.concat([items,item_price,tpv], axis=1)
+print("Most Popular Items")
+print(mpi)
