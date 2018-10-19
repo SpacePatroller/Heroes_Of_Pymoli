@@ -10,7 +10,8 @@ data = pd.read_csv(file)
 count = len(data["SN"].value_counts())
 total = pd.DataFrame([count])
 total_players = total.rename(columns={0:"Total Players"})
-#print(total_players)
+print("Total Players")
+print(total_players)
 
 #   *** Purchasing Analysis (Total) ***
 
@@ -35,6 +36,7 @@ purchasing_analysis_total["Average Price"] = purchasing_analysis_total["Average 
 purchasing_analysis_total["Total Revenue"] = purchasing_analysis_total["Total Revenue"].map("${:,.2f}".format)
 
 #purchasing_analysis_total.columns = ('Number of Unique Items','Average Price','Number of Purchases', 'Total Revenue')
+print("Purchasing Analysis Total")
 print(purchasing_analysis_total)
 
 #       *** Gender Demographics ***
@@ -59,6 +61,7 @@ percent_other = others / total_players
 index1 = ["Male","Female","Other / Non-Disclosed"]
 gender_df = pd.DataFrame ({"Total Count":[males,females,others],
                            "Percentage of Players":[percent_male,percent_female,percent_other]}, index=index1)
+print("Gender Demographics")
 print(gender_df)
 
 #   *** Purchase Analysis by Gender ***
@@ -93,44 +96,131 @@ pur_analysis_by_gender = pd.DataFrame ({" ":" ",
 pur_analysis_by_gender["Average Purchase Price"] = pur_analysis_by_gender["Average Purchase Price"].map("${:.2f}".format)
 pur_analysis_by_gender["Avg Total Purchase per Person"] = pur_analysis_by_gender["Avg Total Purchase per Person"].map("${:.2f}".format)
 pur_analysis_by_gender.index.names = ["Gender"]
-
+print("Purchase Analysis by Gender")
 print(pur_analysis_by_gender)
 
 #   *** Age Demographics ***
  
-bins = [0,10,14,19,24,29,34,39,100]
+data_parsed = data.drop_duplicates("SN")
+
+bins = [0,9,14,19,24,29,34,39,200]
 groups = ["<10","10-14","15-19","20-24","25-29","30-34","35-39","40+"]
 
-data["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
+data_parsed["Total Count"] = pd.cut(data_parsed["Age"], bins, labels=groups)
 
-data.groupby("Total Count")
-#obtain counts for each age range
-agedata = data["Total Count"].value_counts()
-age = pd.DataFrame (agedata)
-#sort index 
-age.sort_index(inplace=True)
+age_data = pd.DataFrame(data_parsed["Total Count"].value_counts())
 
-#format percent to two decimal places
-age["Percent"] = age["Percent"].map("{:.2f}".format)
+age_data["Percent"] = age_data["Total Count"] / age_data["Total Count"].sum() * 100
+age_data["Percent"] = age_data["Percent"].map("% {:.2f}".format)
 
-age["Percent"] = (age["Total Count"] / (age["Total Count"].sum()) ) * 100
-
-print(age)
-
+age_data.sort_index()
+print("Age Demographics")
+print(age_data)
 
 
 #   *** Purchasing Analysis (Age) ***
 
-#df["Test Score Summary"] = pd.cut(df["Test Score"], bins,
- 
-bins = [0,9,14,19,24,29,34,39,200]
-groups = ["<10","10-14","15-19","20-24","25-29","30-34","35-39","40+"]
 
-unique_sn["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
+data["Total Count"] = pd.cut(data["Age"], bins, labels=groups)
+byage = pd.DataFrame(data["Total Count"].value_counts())
+byage = byage.reset_index()
 
-age_data = pd.DataFrame(unique_sn["Total Count"].value_counts())
 
-age_data["percent"] = age_data["Total Count"] / age_data["Total Count"].sum() * 100
-age_data["percent"] = age_data["percent"].map("% {:.2f}".format)
+lessthen_ten = data.loc[data["Age"] < 10,:]
+first = lessthen_ten["Price"].sum() / lessthen_ten["Price"].count()
 
-age_data.sort_index()
+lessthen_fourteen = data.loc[(data["Age"] <= 14) & (data["Age"] >= 10)]
+second = lessthen_fourteen["Price"].sum() / lessthen_fourteen["Price"].count()
+
+lessthen_nineteen = data.loc[(data["Age"] <= 19) & (data["Age"] >= 15)]
+third = lessthen_nineteen["Price"].sum() / lessthen_nineteen["Price"].count()
+
+lessthen_twentyfour = data.loc[(data["Age"] <= 24) & (data["Age"] >= 20)]
+fourth = lessthen_twentyfour["Price"].sum() / lessthen_twentyfour["Price"].count()
+
+lessthen_twentynine = data.loc[(data["Age"] <= 29) & (data["Age"] >= 25)]
+fifth = lessthen_twentynine["Price"].sum() / lessthen_twentynine["Price"].count()
+
+
+lessthen_thirtyfour = data.loc[(data["Age"] <= 34) & (data["Age"] >= 30)]
+sixth = lessthen_thirtyfour["Price"].sum() / lessthen_thirtyfour["Price"].count()
+
+lessthen_thirtynine = data.loc[(data["Age"] <= 39) & (data["Age"] >= 35)]
+seventh = lessthen_thirtynine["Price"].sum() / lessthen_thirtynine["Price"].count()
+
+lessthen_forty = data.loc[data["Age"] >=40]
+eight = lessthen_forty["Price"].sum() / lessthen_forty["Price"].count()
+
+avp = pd.DataFrame({"Average Purchase Price":[first,second,third,fourth,fifth,sixth,seventh,eight]})
+#avp = pd.Series([first,second,third,fourth,fifth,sixth,seventh])
+avp["Average Purchase Price"] = avp["Average Purchase Price"].map("% {:.2f}".format)
+
+tester = pd.concat([byage,avp], axis=1)
+
+#Total Purchase Value
+lessthen_ten = data.loc[data["Age"] < 10,:]
+one = lessthen_ten["Price"].sum()
+
+lessthen_fourteen = data.loc[(data["Age"] <= 14) & (data["Age"] >= 10)]
+two = lessthen_fourteen["Price"].sum() 
+
+lessthen_nineteen = data.loc[(data["Age"] <= 19) & (data["Age"] >= 15)]
+three = lessthen_nineteen["Price"].sum()
+
+lessthen_twentyfour = data.loc[(data["Age"] <= 24) & (data["Age"] >= 20)]
+four = lessthen_twentyfour["Price"].sum()
+
+lessthen_twentynine = data.loc[(data["Age"] <= 29) & (data["Age"] >= 25)]
+five = lessthen_twentynine["Price"].sum() 
+
+
+lessthen_thirtyfour = data.loc[(data["Age"] <= 34) & (data["Age"] >= 30)]
+six = lessthen_thirtyfour["Price"].sum()
+
+lessthen_thirtynine = data.loc[(data["Age"] <= 39) & (data["Age"] >= 35)]
+seven = lessthen_thirtynine["Price"].sum() 
+
+lessthen_forty = data.loc[data["Age"] >=40]
+aight = lessthen_forty["Price"].sum() 
+
+tpv = pd.DataFrame({"Total Purchase Price":[one,two,three,four,five,six,seven,aight]})
+tpv["Total Purchase Price"] = tpv["Total Purchase Price"].map("$ {:.2f}".format)
+
+tested = pd.concat([tester,tpv], axis=1)
+
+#Avg Total Purchase per Person
+lessthen_ten = data.loc[data["Age"] < 10,:]
+one = lessthen_ten["Price"].sum() / len(lessthen_ten["SN"].value_counts())
+
+lessthen_fourteen = data.loc[(data["Age"] <= 14) & (data["Age"] >= 10)]
+two = lessthen_fourteen["Price"].sum() / len(lessthen_fourteen["SN"].value_counts())
+
+lessthen_nineteen = data.loc[(data["Age"] <= 19) & (data["Age"] >= 15)]
+three = lessthen_nineteen["Price"].sum() / len(lessthen_nineteen["SN"].value_counts())
+
+lessthen_twentyfour = data.loc[(data["Age"] <= 24) & (data["Age"] >= 20)]
+four = lessthen_twentyfour["Price"].sum() / len(lessthen_twentyfour["SN"].value_counts())
+
+lessthen_twentynine = data.loc[(data["Age"] <= 29) & (data["Age"] >= 25)]
+five = lessthen_twentynine["Price"].sum() / len(lessthen_twentynine["SN"].value_counts())
+
+
+lessthen_thirtyfour = data.loc[(data["Age"] <= 34) & (data["Age"] >= 30)]
+six = lessthen_thirtyfour["Price"].sum() / len(lessthen_thirtyfour["SN"].value_counts())
+
+lessthen_thirtynine = data.loc[(data["Age"] <= 39) & (data["Age"] >= 35)]
+seven = lessthen_thirtynine["Price"].sum() / len(lessthen_thirtynine["SN"].value_counts())
+
+lessthen_forty = data.loc[data["Age"] >=40]
+aight = lessthen_forty["Price"].sum() / len(lessthen_forty["SN"].value_counts())
+
+atpp = pd.DataFrame({"Avg Total Purchase per Person":[one,two,three,four,five,six,seven,aight]})
+atpp["Avg Total Purchase per Person"] = atpp["Avg Total Purchase per Person"].map("$ {:.2f}".format)
+
+Pur_Analysis_Age = pd.concat([tested,atpp], axis=1)
+Pur_Analysis_Age.rename(columns = {'index':'Age_Range'})
+Pur_Analysis_Age = pd.concat([tested,atpp], axis=1)
+
+Pur_Analysis_Age = Pur_Analysis_Age.rename(index=str, columns={"index": "Age Range"})
+print("Purchasing Analysis Age")
+print(Pur_Analysis_Age)
