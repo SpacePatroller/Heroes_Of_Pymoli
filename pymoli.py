@@ -191,7 +191,7 @@ lessthen_forty = data.loc[data["Age"] >=40]
 aight = lessthen_forty["Price"].sum() 
 
 tpv = pd.DataFrame({"Total Purchase Price":[one,two,three,four,five,six,seven,aight]})
-tpv["Total Purchase Price"] = tpv["Total Purchase Price"].map("$ {:.2f}".format)
+tpv["Total Purchase Price"] = tpv["Total Purchase Price"].map("$ {:,.2f}".format)
 
 tested = pd.concat([tester,tpv], axis=1)
 
